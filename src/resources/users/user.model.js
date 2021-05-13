@@ -2,7 +2,7 @@ const uuid = require('uuid');
 
 class User {
   constructor({
-    id = uuid(),
+    id = uuid.v4(),
     name = 'USER',
     login = 'user',
     password = 'P@55w0rd'
@@ -11,6 +11,12 @@ class User {
     this.name = name;
     this.login = login;
     this.password = password;
+  }
+
+  update(user) {
+    this.name = user.name;
+    this.login = user.login;
+    this.password = user.password;
   }
 
   static toResponse(user) {
