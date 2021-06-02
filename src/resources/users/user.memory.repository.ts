@@ -3,7 +3,7 @@ import User, { UserData } from './user.model'
 /**
  * @const {Map<string, User>}
  */
-const users = new Map();
+const users: Map<string, User> = new Map();
 
 /**
  * Get all users
@@ -19,7 +19,7 @@ const getAll = async (): Promise<Array<User>> => {
  * @param {string} id first term
  * @returns {Promise<User>} user
  */
-const getById = async (id: string): Promise<User> => {
+const getById = async (id: string): Promise<User|undefined> => {
   const user = users.get(id);
   return user;
 }
@@ -41,10 +41,13 @@ const create = async (data: UserData): Promise<User> => {
  * @param {{name: string, login: string, password: string}} data second term
  * @returns {Promise<User>} user
  */
-const update = async (userId: string, data: UserData): Promise<User> => {
+const update = async (userId: string, data: UserData): Promise<User|undefined> => {
   const user = users.get(userId);
-  user.update(data);
-  users.set(userId, user);
+  if(user) {
+    user.update(data);
+    users.set(userId, user);
+  }
+
   return user;
 }
 

@@ -13,7 +13,7 @@ const getAll = (): Promise<Array<User>> => usersRepo.getAll();
  * @param {string} userId first term
  * @returns {Promise<User>}  user
  */
-const getById = (userId: string): Promise<User> => usersRepo.getById(userId);
+const getById = (userId: string): Promise<User|undefined> => usersRepo.getById(userId);
 
 /**
  * Create user
@@ -28,7 +28,7 @@ const create = (user: UserData): Promise<User> => usersRepo.create(user);
  * @param {{name: string, login: string, password: string}} user second term
  * @returns {Promise<User>} user
  */
-const update = (userId: string, user: UserData): Promise<User> => usersRepo.update(userId, user);
+const update = (userId: string, user: UserData): Promise<User|undefined> => usersRepo.update(userId, user);
 
 /**
  * Delete user

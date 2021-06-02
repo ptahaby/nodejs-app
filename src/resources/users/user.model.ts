@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import { v4 } from 'uuid'
 
 export type UserData = {
   id?: string
@@ -29,7 +29,7 @@ class User {
    * @param {{id: string, name: string, login: string, password: string}} param0 first term
    */
   constructor({
-    id = uuid.v4(),
+    id = v4(),
     name = 'USER',
     login = 'user',
     password = 'P@55w0rd'
