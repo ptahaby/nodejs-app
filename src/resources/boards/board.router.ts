@@ -1,12 +1,14 @@
-const router = require('express').Router();
-const boardService = require('./board.service');
+import { Router, Request, Response } from 'express';
+import * as boardService from './board.service';
 
-router.route('/').get(async (req, res) => {
+const router = Router();
+
+router.route('/').get(async (_, res: Response) => {
   const boards = await boardService.getAll();
   res.json(boards);
 });
 
-router.route('/:id').get(async (req, res) => {
+router.route('/:id').get(async (req: Request<{id: string}>, res: Response) => {
   const {id} = req.params;
   const board = await boardService.getById(id);
   if(board){
@@ -16,12 +18,12 @@ router.route('/:id').get(async (req, res) => {
   }
 });
 
-router.route('/').post(async (req, res) => {
+router.route('/').post(async (req, res: Response) => {
   const board = await boardService.create(req.body);
   res.status(201).json(board);
 });
 
-router.route('/:id').put(async (req, res) => {
+router.route('/:id').put(async (req, res: Response) => {
   const board = await boardService.update(req.params.id, req.body);
   if(board){
     res.json(board);
@@ -30,7 +32,7 @@ router.route('/:id').put(async (req, res) => {
   }
 });
 
-router.route('/:id').delete(async (req,res) => {
+router.route('/:id').delete(async (req,res: Response) => {
   const isDeleted = await boardService.deleteBoard(req.params.id);
   if(isDeleted) {
     res.status(204).send();
@@ -39,4 +41,4 @@ router.route('/:id').delete(async (req,res) => {
   }
 });
 
-module.exports = router;
+export default router;
