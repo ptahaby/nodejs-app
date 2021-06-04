@@ -1,0 +1,22 @@
+import { Request, Response, NextFunction } from 'express';
+import fs from 'fs';
+
+export const getFormattedDate = (): string => {
+    const currentDateTime = new Date();
+    const formattedDate = `${currentDateTime.getFullYear()}-${currentDateTime.getMonth() + 1}-${currentDateTime.getDate()} ${currentDateTime.getHours()}:${currentDateTime.getMinutes()}:${currentDateTime.getSeconds()}`
+    return formattedDate;
+}
+
+export const logRequest = (req: Request, res: Response, next: NextFunction): void => {
+    const { url, method, body, query } = req
+    const { statusCode } = res;
+    const formattedBody = JSON.stringify(body);
+    const formattedParams = JSON.stringify(query);
+    const log = `[${getFormattedDate()}] ${method}:${url} ${statusCode}; Query params: ${formattedParams}; Body: ${formattedBody}`;
+
+    fs.appendFile(`${__dirname  }/../../logs.txt`, `${log  }\n`, (err) => {
+        if(err) throw err;
+    })
+    next();
+}
+
