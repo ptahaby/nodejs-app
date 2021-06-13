@@ -76,8 +76,13 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
 1.  install docker-compose v(1.29.2)
     install  docker v(version 19.03.11)
-    
+
 2. Run from root folder:
 
  sudo docker-compose build 
  sudo docker-compose up
+
+ 3. Repositories:
+
+ https://hub.docker.com/repository/docker/ptaha005/nodejs_app
+ https://hub.docker.com/repository/docker/ptaha005/nodejs_psql
