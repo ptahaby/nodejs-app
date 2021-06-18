@@ -1,29 +1,33 @@
-import { v4 } from 'uuid'
-import Column from './column.model';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+
+import ColumnEntity from './column.model';
 
 export type BoardType = {
-  id?: string;
+  id?: number;
   title: string;
-  columns: Array<Column>
+  columns: Array<ColumnEntity>
 }
 
 /**
  * Class representing a Board
  */
+@Entity()
 class Board {
 
-  id: string;
+  @PrimaryGeneratedColumn()
+  id?: number;
 
+  @Column()
   title: string;
 
-  columns: Array<Column>
+  @OneToMany(() => ColumnEntity, column => column.board)
+  columns: Array<ColumnEntity>
 
   /**
    * Create a Board
    * @param {{id: string, title: string, columns: Array<Column>}} param0 first term
    */
-  constructor({id = v4(), title = 'title', columns = []} ={} as BoardType ) {
-    this.id = id;
+  constructor({title = 'title', columns = []} ={} as BoardType ) {
     this.title = title;
     this.columns = columns;
   }
@@ -36,7 +40,7 @@ class Board {
     const { title, columns } = data;
     this.title = title;
     if(columns && Array.isArray(columns)) {
-      this.columns = columns.map(item => new Column(item));
+      this.columns = columns.map(item => new ColumnEntity(item));
     }
   }
 }
