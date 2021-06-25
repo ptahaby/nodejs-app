@@ -20,8 +20,13 @@ router.route('/:id').get(async (req: Request<{id: string}>, res) => {
 });
 
 router.route('/').post(async (req: Request, res: Response) => {
-  const user = await usersService.create(new User(req.body));
-  res.status(201).json(User.toResponse(user));
+  try{
+    const user = await usersService.create(new User(req.body));
+    res.status(201).json(User.toResponse(user));
+  } catch(e) {
+    console.log(e)
+  }
+ 
 });
 
 router.route('/:id').put(async (req: Request<{id: string}>, res: Response) => {
@@ -35,9 +40,9 @@ router.route('/:id').put(async (req: Request<{id: string}>, res: Response) => {
 router.route('/:id').delete(async (req: Request<{id: string}>, res: Response) => {
   const isDeleted = await usersService.deleteUser(req.params.id);
   if(isDeleted) {
-    res.status(204).send();
+    res.status(204).send('The user has been deleted');
   } else {
-    res.status(404).send();
+    res.status(404).send('User not found');
   } 
 });
 

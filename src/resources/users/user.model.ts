@@ -9,8 +9,8 @@ export type UserData = {
   password: string;
 }
 
-type UserResponse = {
-  id:number;
+export type UserResponse = {
+  id:string;
   name: string;
   login: string
 }
@@ -33,7 +33,7 @@ class User {
   password: string;
 
   @OneToMany(() => Task, task => task.user)
-  tasks: Task[]
+  tasks!: Task[]
 
   /**
    * Create a User
@@ -47,7 +47,7 @@ class User {
     this.name = name;
     this.login = login;
     this.password = password;
-    this.tasks = []
+    // this.tasks = []
   }
 
   /**
@@ -66,7 +66,7 @@ class User {
    */
   static toResponse(user: User): UserResponse {
     const { id, name, login } = user;
-    return { id, name, login };
+    return { id:String(id), name, login };
   }
 }
 
