@@ -19,7 +19,7 @@ const getById = (id: string): Promise<Board|undefined> => boardRepo.getById(id);
  * @param {{title: string, columns: Array<Column>}} board first term
  * @returns {Promise<Board>} board
  */
-const create = (board: BoardType): Promise<Board> => boardRepo.create(board);
+const create = (board: BoardType): Promise<Board|undefined> => boardRepo.create(board);
 
 /**
  * Update board

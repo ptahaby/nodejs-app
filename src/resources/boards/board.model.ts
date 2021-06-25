@@ -1,10 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 import ColumnEntity from './column.model';
+import Task from '../tasks/task.model';
 
 export type BoardType = {
   id?: number;
   title: string;
+  task: Array<Task>
   columns: Array<ColumnEntity>
 }
 
@@ -15,21 +17,23 @@ export type BoardType = {
 class Board {
 
   @PrimaryGeneratedColumn()
-  id?: number;
+  id!: number;
 
   @Column()
   title: string;
 
+  @OneToMany(() => Task, task => task.board)
+  task!: Task[];
+
   @OneToMany(() => ColumnEntity, column => column.board)
-  columns: Array<ColumnEntity>
+  columns!: Array<ColumnEntity>
 
   /**
    * Create a Board
    * @param {{id: string, title: string, columns: Array<Column>}} param0 first term
    */
-  constructor({title = 'title', columns = []} ={} as BoardType ) {
+  constructor({title = 'title' } ={} as BoardType ) {
     this.title = title;
-    this.columns = columns;
   }
 
   /**

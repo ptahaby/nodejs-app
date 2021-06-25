@@ -1,11 +1,11 @@
-import { Entity, Column as  ColumnT, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column as  ColumnT, PrimaryGeneratedColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import Board from './board.model';
+import Task from '../tasks/task.model';
 
 type ColumnData = {
   title: string,
   order: number,
-  board: Board
 }
 
 /**
@@ -23,16 +23,18 @@ class Column {
   order: number;
 
   @ManyToOne(() => Board, board => board.columns)
-  board: Board
+  board!: Board
+
+  @OneToMany(() => Task, task => task.column)
+  task!: Task[]
 
   /**
    * Create a column
    * @param {{id: string, title: string, order: number}} param0 first term
    */
-  constructor({ title, order, board } = {} as ColumnData) {
+  constructor({ title, order } = {} as ColumnData) {
     this.title = title;
     this.order = order;
-    this.board = board
   }
 }
 
