@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 import User from '../users/user.model';
 import Board from '../boards/board.model';
@@ -9,9 +9,23 @@ export type TaskData = {
   title: string;
   order: number;
   description: string;
-  user: User|null;
-  board: Board|null;
-  column: ColumnModel|null; 
+}
+
+export type TaskRequestBody = {
+  title: string;
+  order: number;
+  description: string;
+  userId: string;
+  boardId: string;
+  columnId: string;
+}
+
+export type TaskResponse = {
+  id: string,
+  title: string,
+  order: number,
+  description: string,
+  userId: string
 }
 
 /**
@@ -32,15 +46,13 @@ class Task {
   description: string;
 
   @ManyToOne(() => User, user => user.tasks)
-  user: User|null;
+  user!: User|null;
 
-  @OneToOne(() => Board)
-  @JoinColumn()
-  board: Board|null;
+  @ManyToOne(() => Board, board => board.task)
+  board!: Board|null;
   
-  @OneToOne(() => ColumnModel)
-  @JoinColumn()
-  column: ColumnModel|null
+  @ManyToOne(() => ColumnModel)
+  column!: ColumnModel|null
 
   /**
    * create a Task
@@ -49,15 +61,10 @@ class Task {
   constructor({
       title, order,
       description,
-      user = null,
-      board = null,
-      column=null } = {} as TaskData){
+    } = {} as TaskData){
     this.title= title;
     this.order = order;
     this.description = description;
-    this.user = user;
-    this.board = board;
-    this.column = column;
   }
 
   /**
@@ -65,13 +72,10 @@ class Task {
    * @param {{title: string, order: number, description: string, userId: string|null, boardId: string|null, columnId: string|null}} task first term
    */
   update(task: TaskData): void {
-    const {title, order, description, user, board, column} = task;
+    const {title, order, description } = task;
     this.title  =title;
     this.order = order;
     this.description = description;
-    this.user = user;
-    this.board = board;
-    this.column = column;
   }
 
   /**
