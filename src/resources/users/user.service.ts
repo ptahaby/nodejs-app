@@ -8,6 +8,8 @@ import User, { UserData } from './user.model'
  */
 const getAll = (): Promise<Array<User>> => usersRepo.getAll();
 
+const getByLogin = (login:string): Promise<User|undefined> => usersRepo.getByLogin(login);
+
 /**
  * Get user by id
  * @param {string} userId first term
@@ -40,4 +42,4 @@ const deleteUser = (userId: string): Promise<boolean> => {
   return usersRepo.deleteUser(userId);
 }
 
-export {  deleteUser, update, create, getById, getAll };
+export {  deleteUser, update, create, getById, getAll, getByLogin };

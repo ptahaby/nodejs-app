@@ -12,6 +12,11 @@ const getAll = async (): Promise<Array<User>> => {
   return users; 
 };
 
+const getByLogin = async (login: string):Promise<User|undefined> => {
+  const user = await getRepository(User).findOne({ login });
+  return user;
+}
+
 /**
  * Get user by id
  * @param {string} id first term
@@ -66,4 +71,4 @@ const deleteUser = async(userId: string): Promise<boolean> => {
     return false
   }
 
-export { deleteUser, update, create, getById, getAll };
+export { deleteUser, update, create, getById, getAll, getByLogin };
