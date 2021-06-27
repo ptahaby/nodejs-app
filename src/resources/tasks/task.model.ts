@@ -15,9 +15,9 @@ export type TaskRequestBody = {
   title: string;
   order: number;
   description: string;
-  userId: string;
-  boardId: string;
-  columnId: string;
+  userId: string|null;
+  boardId: string|null;
+  columnId: string|null;
 }
 
 export type TaskResponse = {
@@ -25,7 +25,9 @@ export type TaskResponse = {
   title: string,
   order: number,
   description: string,
-  userId: string
+  userId: string|null,
+  columnId: string|null,
+  boardId: string|null
 }
 
 /**
@@ -33,8 +35,8 @@ export type TaskResponse = {
  */
 @Entity()
 class Task {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   title: string;
@@ -48,10 +50,10 @@ class Task {
   @ManyToOne(() => User, user => user.tasks)
   user!: User|null;
 
-  @ManyToOne(() => Board, board => board.task)
+  @ManyToOne(() => Board, board => board.tasks)
   board!: Board|null;
   
-  @ManyToOne(() => ColumnModel)
+  @ManyToOne(() => ColumnModel, column => column.tasks)
   column!: ColumnModel|null
 
   /**

@@ -4,7 +4,14 @@ import ColumnEntity from './column.model';
 import Task from '../tasks/task.model';
 
 export type BoardType = {
-  id?: number;
+  id?: string;
+  title: string;
+  task: Array<Task>
+  columns: Array<ColumnEntity>
+}
+
+type BoardResponse = {
+  id: string;
   title: string;
   task: Array<Task>
   columns: Array<ColumnEntity>
@@ -16,14 +23,14 @@ export type BoardType = {
 @Entity()
 class Board {
 
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   title: string;
 
   @OneToMany(() => Task, task => task.board)
-  task!: Task[];
+  tasks!: Task[];
 
   @OneToMany(() => ColumnEntity, column => column.board)
   columns!: Array<ColumnEntity>
@@ -46,6 +53,10 @@ class Board {
     if(columns && Array.isArray(columns)) {
       this.columns = columns.map(item => new ColumnEntity(item));
     }
+  }
+
+  static toResponse(board: Board): BoardResponse  {
+    return { id:board.id, title: board.title, columns: board.columns, task: board.tasks };
   }
 }
 

@@ -3,7 +3,7 @@ import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import Task from '../tasks/task.model';
 
 export type UserData = {
-  id: number
+  id?: string
   name: string;
   login: string;
   password: string;
@@ -20,8 +20,8 @@ export type UserResponse = {
 @Entity()
 class User {
 
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
   name: string;
@@ -66,7 +66,7 @@ class User {
    */
   static toResponse(user: User): UserResponse {
     const { id, name, login } = user;
-    return { id:String(id), name, login };
+    return { id, name, login };
   }
 }
 

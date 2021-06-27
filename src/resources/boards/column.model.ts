@@ -13,8 +13,8 @@ type ColumnData = {
  */
 @Entity()
 class Column {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @ColumnT()
   title: string;
@@ -26,7 +26,7 @@ class Column {
   board!: Board
 
   @OneToMany(() => Task, task => task.column)
-  task!: Task[]
+  tasks!: Task[]
 
   /**
    * Create a column
