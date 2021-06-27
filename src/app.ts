@@ -6,7 +6,9 @@ import fs from 'fs';
 import userRouter from './resources/users/user.router';
 import boardRouter from './resources/boards/board.router';
 import taskRouter from './resources/tasks/task.router';
+import loginRouter from './resources/login/login.router';
 import { logRequest, logErrorHandler, getFormattedDate } from './middleware/logger';
+import { verifyToken } from  './middleware/verify-session';
 import 'reflect-metadata';
 
 process.on('uncaughtException', (error: Error) => {
@@ -41,6 +43,8 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use('/login', loginRouter);
+app.use(verifyToken);
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 app.use('/boards', taskRouter);
