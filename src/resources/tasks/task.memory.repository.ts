@@ -4,7 +4,10 @@ import Column from '../boards/column.model';
 import User from '../users/user.model';
 import Task, { TaskRequestBody, TaskResponse } from './task.model';
 
-const parseTaskForResponse = (task: Task):TaskResponse => ({id: String(task.id), title: task.title, order: task.order, description: task.description, userId: task.user?String(task.user.id): ''})
+const parseTaskForResponse = (task: Task):TaskResponse => ({
+  id: task.id, title: task.title,
+  order: task.order, description: task.description,
+  userId: task.user?.id ||null, columnId: task.column?.id || null, boardId: task.board?.id||null })
 /**
  * Get tasks
  * @param {string} boardId first term
@@ -30,13 +33,14 @@ const getTaskById = async (boardId: string, taskId: string): Promise<TaskRespons
     const task = await getRepository(Task)
     .createQueryBuilder('task')
     .leftJoinAndSelect('task.user', 'user')
+    .leftJoinAndSelect('task.column', 'column')
     .leftJoinAndSelect('task.board', 'board')
-    .select(['task.id as id', 'task.title as title','task.description as description', 'task.order as order', 'user.id as userId'])
+    .select(['task.id as id', 'task.title as title','task.description as description', 'task.order as order', 'user.id as userId', 'column.id as columnid', 'board.id as boardid' ])
     .where('task.boardId = :boardId', {boardId})
     .andWhere('task.id = :id', {id: taskId})
     .getRawOne();
     
-    return {id: task.id, title: task.title, order: task.order, description: task.description, userId: task.userid}
+    return {id: task.id, title: task.title, order: task.order, description: task.description, userId: task.userid, columnId: task.columnid, boardId: task.boardid}
   };
 
 /**
@@ -47,16 +51,17 @@ const getTaskById = async (boardId: string, taskId: string): Promise<TaskRespons
  */
 
 const create = async (boardId: string, data: TaskRequestBody): Promise<TaskResponse> => {
-  const board = await getManager().findOne(Board, boardId) || null;
-  const column = await getManager().findOne(Column, data.columnId) || null;
-  const user = await getManager().findOne(User, data.userId) || null
+  const board =  await getManager().findOne(Board, boardId) || null;
+  const column = data.columnId ? await getManager().findOne(Column, data.columnId)||null : null;
+  const user = data.userId ? await getManager().findOne(User, data.userId)||null : null
+  
   const newTask = new Task({ title: data.title, order: data.order, description: data.description })
-  newTask.board = board;
+  newTask.board = board || null;
   newTask.column = column;
   newTask.user = user;
 
   const task  = await getManager().save(newTask);
-  return {id: String(task.id), title: task.title, order: task.order, description: task.description, userId: user?String(user.id): ''}
+  return {id: task.id, title: task.title, order: task.order, description: task.description, userId: user ? user.id: null, columnId: column? column.id: null, boardId}
 }
 
 /**
@@ -67,9 +72,9 @@ const create = async (boardId: string, data: TaskRequestBody): Promise<TaskRespo
  * @returns {Promise<Task>} task
  */
 const update = async (boardId: string, taskId: string, data: TaskRequestBody): Promise<TaskResponse|undefined> => {
-    const board = await getManager().findOne(Board, boardId) || null;
-    const column = await getManager().findOne(Column, data.columnId) || null;
-    const user = await getManager().findOne(User, data.userId) || null
+  const board = data.boardId ? await getManager().findOne(Board, boardId)||null : null;
+  const column = data.columnId ? await getManager().findOne(Column, data.columnId)||null : null;
+  const user = data.userId ? await getManager().findOne(User, data.userId)||null : null
     const task = await getManager().findOne(Task, taskId) || null
     if(task) {
       task.title = data.title;
@@ -110,6 +115,7 @@ const deleteTasksByBoardId = async (boardId: string): Promise<void> => {
     const taskRepository = getRepository(Task);
     await taskRepository
     .createQueryBuilder('task')
+    .leftJoin('task.board', 'board')
     .delete()
     .where("task.board = :id", {id: boardId})
     .execute();
@@ -121,11 +127,16 @@ const deleteTasksByBoardId = async (boardId: string): Promise<void> => {
 */
 const clearUserIdTasks = async (userId: string): Promise<void> => {
   const repositoryTask = getRepository(Task)
-  await repositoryTask
+  const tasks = await repositoryTask
     .createQueryBuilder('task')
     .innerJoinAndSelect('task.user', 'user')
     .where('task.user = :id', {id: userId})
     .getMany();
+
+    tasks.forEach(async (e: Task) => {
+      e.user = null;
+      await repositoryTask.save(e)
+    })
 };
 
 export { 
