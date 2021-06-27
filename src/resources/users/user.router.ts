@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
-import User from './user.model';
+import bcrypt from 'bcrypt';
+import { SALT_ROUNDS } from '../../common/config'
+import User, { UserData } from './user.model';
 import * as usersService from './user.service';
 
 const router = Router();
@@ -21,7 +23,10 @@ router.route('/:id').get(async (req: Request<{id: string}>, res) => {
 
 router.route('/').post(async (req: Request, res: Response) => {
   try{
-    const user = await usersService.create(new User(req.body));
+    const { name, login, password } = req.body as UserData;
+    const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 2))
+    const hash = bcrypt.hashSync(password, salt);
+    const user = await usersService.create(new User({name, login, password: hash}));
     res.status(201).json(User.toResponse(user));
   } catch(e) {
     console.log(e)
