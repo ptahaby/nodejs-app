@@ -7,8 +7,6 @@ import User, { UserData } from './user.model';
  */
 const getAll = async (): Promise<Array<User>> => { 
   const users = await getManager().find(User) || []
-  // const newUsers = users.map(user => ({ ...user, id: String(user.id) }));
- 
   return users; 
 };
 

@@ -11,7 +11,9 @@ module.exports = {
         'src/resources/boards/column.model.ts',
         'src/resources/tasks/task.model.ts'
     ],
-    synchronize: true,
+    synchronize: false,
     keepConnectionAlive: true,
-    logging: false
+    logging: false,
+    cli: {'migrationDir': 'migration'},
+    migrations: ['migration/*.ts']
 }

@@ -86,3 +86,15 @@ For more information, visit: https://code.visualstudio.com/docs/editor/debugging
 
  https://hub.docker.com/repository/docker/ptaha005/nodejs_app
  https://hub.docker.com/repository/docker/ptaha005/nodejs_psql
+
+ ### Migration run 
+
+
+ 1. npm install
+ 2. create data base `course`
+ 3. run command:
+ 
+ ```
+ ./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:run
+ ```
+4. npm start

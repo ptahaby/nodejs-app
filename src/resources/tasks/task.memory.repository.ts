@@ -13,14 +13,19 @@ const parseTaskForResponse = (task: Task):TaskResponse => ({
  * @param {string} boardId first term
  * @returns {Promise<Array<Tasks>>} tasks
  */
-const getTasks = async (boardId: string): Promise<Array<Task>> => 
+const getTasks = async (boardId: string): Promise<Array<TaskResponse>> => 
     {
-    const boardTasks = await getRepository(Task)
-      .createQueryBuilder('task')
-      .innerJoinAndSelect('task.board', 'board')
-      .where('task.board = :id', {id: boardId})
-      .getMany();
-      return boardTasks
+      try{
+        const boardTasks = await getRepository(Task)
+        .createQueryBuilder('task')
+        .innerJoinAndSelect('task.board', 'board')
+        .where('task.board = :id', {id: boardId})
+        .getMany();
+        return boardTasks.map(parseTaskForResponse)
+      }catch(e) {
+        return []
+      }
+
   };
 
 /**
@@ -39,8 +44,10 @@ const getTaskById = async (boardId: string, taskId: string): Promise<TaskRespons
     .where('task.boardId = :boardId', {boardId})
     .andWhere('task.id = :id', {id: taskId})
     .getRawOne();
-    
-    return {id: task.id, title: task.title, order: task.order, description: task.description, userId: task.userid, columnId: task.columnid, boardId: task.boardid}
+    if(task){
+      return {id: task.id, title: task.title, order: task.order, description: task.description, userId: task.userid, columnId: task.columnid, boardId: task.boardid}
+    } 
+    return undefined;  
   };
 
 /**
@@ -133,10 +140,11 @@ const clearUserIdTasks = async (userId: string): Promise<void> => {
     .where('task.user = :id', {id: userId})
     .getMany();
 
-    tasks.forEach(async (e: Task) => {
+    await Promise.all(tasks.map(async (e: Task) => {
       e.user = null;
-      await repositoryTask.save(e)
-    })
+      const task = await repositoryTask.save(e)
+      return task
+    })) 
 };
 
 export { 
