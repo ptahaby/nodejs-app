@@ -1,12 +1,12 @@
 import * as taskRepo from './task.memory.repository';
-import Task, { TaskRequestBody, TaskResponse } from './task.model';
+import { TaskRequestBody, TaskResponse } from './task.model';
 
 /**
  * Get tasks
  * @param {string} boardId first term
  * @returns {Promise<Array<Task>>} tasks
  */
-const getTasks = (boardId: string): Promise<Array<Task>> => taskRepo.getTasks(boardId);
+const getTasks = (boardId: string): Promise<Array<TaskResponse>> => taskRepo.getTasks(boardId);
 
 /**
  * Get task

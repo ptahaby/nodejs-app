@@ -50,10 +50,10 @@ class Task {
   @ManyToOne(() => User, user => user.tasks)
   user!: User|null;
 
-  @ManyToOne(() => Board, board => board.tasks)
+  @ManyToOne(() => Board, board => board.tasks, { onDelete: "CASCADE"})
   board!: Board|null;
   
-  @ManyToOne(() => ColumnModel, column => column.tasks)
+  @ManyToOne(() => ColumnModel, column => column.tasks, { onDelete: "CASCADE"})
   column!: ColumnModel|null
 
   /**

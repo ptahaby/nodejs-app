@@ -37,9 +37,6 @@ const update = (userId: string, user: UserData): Promise<User|undefined> => user
  * @param {string} userId first term
  * @returns {Promise<boolean>} boolean
  */
-const deleteUser = (userId: string): Promise<boolean> => {
-  taskService.clearUserIdTasks(userId);
-  return usersRepo.deleteUser(userId);
-}
+const deleteUser = (userId: string): Promise<boolean> => taskService.clearUserIdTasks(userId).then(() => usersRepo.deleteUser(userId))
 
 export {  deleteUser, update, create, getById, getAll, getByLogin };
