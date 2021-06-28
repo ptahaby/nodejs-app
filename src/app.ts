@@ -5,7 +5,8 @@ import YAML from 'yamljs';
 import userRouter from './resources/users/user.router';
 import boardRouter from './resources/boards/board.router';
 import taskRouter from './resources/tasks/task.router';
-import { logRequest, logErrorHandler, uncaughtException, unhandledRejection } from './middleware/logger';
+import { logRequest, logErrorHandler, getFormattedDate } from './middleware/logger';
+import 'reflect-metadata';
 
 process.on('uncaughtException', uncaughtException)
 process.on('unhandledRejection',unhandledRejection)

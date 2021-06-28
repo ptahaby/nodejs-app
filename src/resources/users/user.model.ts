@@ -1,4 +1,6 @@
-import { v4 } from 'uuid'
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+
+import Task from '../tasks/task.model';
 
 export type UserData = {
   id?: string
@@ -7,7 +9,7 @@ export type UserData = {
   password: string;
 }
 
-type UserResponse = {
+export type UserResponse = {
   id:string;
   name: string;
   login: string
@@ -15,29 +17,37 @@ type UserResponse = {
 /**
  * Class representing a User
  */
+@Entity()
 class User {
-  id: string;
 
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column()
   name: string;
 
+  @Column()
   login: string;
 
+  @Column()
   password: string;
+
+  @OneToMany(() => Task, task => task.user)
+  tasks!: Task[]
 
   /**
    * Create a User
-   * @param {{id: string, name: string, login: string, password: string}} param0 first term
+   * @param {{name: string, login: string, password: string}} param0 first term
    */
   constructor({
-    id = v4(),
     name = 'USER',
     login = 'user',
     password = 'P@55w0rd'
-  } = {}) {
-    this.id = id;
+  } = {} as UserData) {
     this.name = name;
     this.login = login;
     this.password = password;
+    // this.tasks = []
   }
 
   /**

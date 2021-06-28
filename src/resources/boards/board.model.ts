@@ -1,31 +1,46 @@
-import { v4 } from 'uuid'
-import Column from './column.model';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+
+import ColumnEntity from './column.model';
+import Task from '../tasks/task.model';
 
 export type BoardType = {
   id?: string;
   title: string;
-  columns: Array<Column>
+  task: Array<Task>
+  columns: Array<ColumnEntity>
+}
+
+type BoardResponse = {
+  id: string;
+  title: string;
+  task: Array<Task>
+  columns: Array<ColumnEntity>
 }
 
 /**
  * Class representing a Board
  */
+@Entity()
 class Board {
 
-  id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
+  @Column()
   title: string;
 
-  columns: Array<Column>
+  @OneToMany(() => Task, task => task.board)
+  tasks!: Task[];
+
+  @OneToMany(() => ColumnEntity, column => column.board)
+  columns!: Array<ColumnEntity>
 
   /**
    * Create a Board
    * @param {{id: string, title: string, columns: Array<Column>}} param0 first term
    */
-  constructor({id = v4(), title = 'title', columns = []} ={} as BoardType ) {
-    this.id = id;
+  constructor({title = 'title' } ={} as BoardType ) {
     this.title = title;
-    this.columns = columns;
   }
 
   /**
@@ -36,8 +51,12 @@ class Board {
     const { title, columns } = data;
     this.title = title;
     if(columns && Array.isArray(columns)) {
-      this.columns = columns.map(item => new Column(item));
+      this.columns = columns.map(item => new ColumnEntity(item));
     }
+  }
+
+  static toResponse(board: Board): BoardResponse  {
+    return { id:board.id, title: board.title, columns: board.columns, task: board.tasks };
   }
 }
 

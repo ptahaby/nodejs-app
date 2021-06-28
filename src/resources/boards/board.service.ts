@@ -1,5 +1,4 @@
 import * as  boardRepo from './board.memory.reporitory';
-import * as taskService from '../tasks/task.service';
 import Board, { BoardType } from './board.model';
 /**
  * Get all boards
@@ -19,7 +18,7 @@ const getById = (id: string): Promise<Board|undefined> => boardRepo.getById(id);
  * @param {{title: string, columns: Array<Column>}} board first term
  * @returns {Promise<Board>} board
  */
-const create = (board: BoardType): Promise<Board> => boardRepo.create(board);
+const create = (board: BoardType): Promise<Board|undefined> => boardRepo.create(board);
 
 /**
  * Update board
@@ -34,9 +33,8 @@ const update = (id: string, board: BoardType): Promise<Board|undefined> => board
  * @param {string} id first term
  * @returns {Promise<boolean>} boolean
  */
-const deleteBoard = (id: string): Promise<boolean> => {
-  taskService.deleteTasksByBoardId(id);
-  return boardRepo.deleteBoard(id);
-} 
+const deleteBoard = (id: string): Promise<boolean> =>  
+    boardRepo.deleteBoard(id)
+
 
 export { getAll, getById, create, update, deleteBoard };
