@@ -15,7 +15,7 @@ export const  verifyToken = async (req: Request, res: Response, next: NextFuncti
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1] || ''
     if(!authHeader) {
-      res.status(403).send()
+      res.status(401).send('Unauthorized')
     } else {
       try{
         const decoded = jwt.verify(token, JWT_SECRET_KEY || '') as JwtPayloadWithUser 
@@ -24,10 +24,10 @@ export const  verifyToken = async (req: Request, res: Response, next: NextFuncti
           req.user = user;
           next();
         } else {
-          res.status(401).send({error: 'not authorized'})
+          res.status(403).send({error: 'Forbidden'})
         }
       } catch(err) {
-        res.status(401).send({error: 'not authorized'})
+        res.status(401).send({error: 'Unauthorized'})
       }
     }
   }

@@ -24,7 +24,7 @@ router.route('/:id').get(async (req: Request<{id: string}>, res) => {
 router.route('/').post(async (req: Request, res: Response) => {
   try{
     const { name, login, password } = req.body as UserData;
-    const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 2))
+    const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 10))
     const hash = bcrypt.hashSync(password, salt);
     const user = await usersService.create(new User({name, login, password: hash}));
     res.status(201).json(User.toResponse(user));
