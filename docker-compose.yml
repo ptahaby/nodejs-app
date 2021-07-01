@@ -4,8 +4,7 @@ services:
         build:
             context: ./
             dockerfile: ./dockerfile_app/Dockerfile
-        command: npm run migration:run
-        command: npm start
+        command: bash -c "npm run migration:run && npm start"
         restart: always
         volumes: 
             - ./src:/usr/app/src
