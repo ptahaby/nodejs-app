@@ -1,7 +1,5 @@
 import { Response, Request } from 'express';
 import { Controller, Get, Post, Body, Param, Delete, Put, Res } from '@nestjs/common';
-import bcrypt from 'bcrypt';
-import { SALT_ROUNDS } from '../../common/config'
 import User, { UserData } from './user.model';
 import { UsersService } from './user.service';
 
@@ -34,9 +32,7 @@ export class UsersController {
   async create(@Body() createUser: UserData, @Res() res: Response): Promise<void> {
     try{
       const { name, login, password } = createUser;
-      const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 10))
-      const hash = bcrypt.hashSync(password, salt);
-      const user = await this.usersService.create(new User({name, login, password: hash}));
+        const user = await this.usersService.create(new User({name, login, password}));
       res.status(201).json(User.toResponse(user));
     } catch(e) {
       console.log(e)

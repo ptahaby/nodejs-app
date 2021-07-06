@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, BeforeInsert } from 'typeorm';
+import bcrypt from 'bcrypt';
+import { SALT_ROUNDS } from '../../common/config'
 import Task from '../tasks/task.model';
 
 export type UserData = {
@@ -31,6 +32,12 @@ class User {
 
   @Column()
   password: string;
+
+  @BeforeInsert()
+  hashPassword(): void {
+    const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 10))
+    this.password = bcrypt.hashSync(this.password, salt);  
+  }
 
   @OneToMany(() => Task, task => task.user)
   tasks!: Task[]

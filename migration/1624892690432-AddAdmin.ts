@@ -1,12 +1,9 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
-import bcrypt from 'bcrypt'
-import { SALT_ROUNDS } from '../src/common/config'
+
 export class AddAdmin1624892690432 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        const salt = bcrypt.genSaltSync(parseInt(SALT_ROUNDS, 10));
-        const hash = bcrypt.hashSync('admin', salt);
-        await queryRunner.manager.createQueryBuilder().insert().into('user').values({name: 'admin', login: 'admin', password: hash}).execute();
+        await queryRunner.manager.createQueryBuilder().insert().into('user').values({name: 'admin', login: 'admin', password: 'admin'}).execute();
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
