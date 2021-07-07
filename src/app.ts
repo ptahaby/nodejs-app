@@ -6,12 +6,14 @@ import { INestApplication } from '@nestjs/common';
 import 'reflect-metadata';
 import { uncaughtException, unhandledRejection } from './common/logger';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './exceptions/http-exception.filter';
 
 process.on('uncaughtException', uncaughtException)
 process.on('unhandledRejection',unhandledRejection)
 
 async function bootstrap(): Promise<INestApplication> {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalFilters(new HttpExceptionFilter());
   const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
     
   SwaggerModule.setup('doc', app, swaggerDocument) 
