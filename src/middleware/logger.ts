@@ -11,6 +11,12 @@ export const getFormattedDate = (): string => {
 }
 
 const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LOGS) => {
+  fs.appendFile(`${__dirname}${file}`, `${logs  }\n`, (err) => {
+    if(err) throw err;
+  });
+}
+
+const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LOGS) => {
     fs.appendFile(`${__dirname}${file}`, `${logs  }\n`, (err) => {
       if(err) throw err;
     });
@@ -25,7 +31,6 @@ export const logRequest = (req: Request, res: Response, next: NextFunction): voi
         const log = `[${getFormattedDate()}] ${method}:${url} ${statusCode}; Query params: ${formattedParams}; Body: ${formattedBody}`;
         addLogsToFile(log, REQUEST_LOGS);
     })
-
     next();
 }
 
@@ -40,11 +45,11 @@ export const logErrorHandler = (error: Error, _: Request, res: Response, next: N
 }
 
 export const unhandledRejection =  (error: Error): void => {
-    const log = `[${getFormattedDate()}] UNHANDLED REJECTION: ${error.stack || error.message}`;
-    addLogsToFile(log, ERROR_LOGS);
-  }
-  
-  export const uncaughtException = (error: Error): void => {
-    const log = `[${getFormattedDate()}] UNCAUGHT EXCEPTION: ${error.stack || error.message}`;
-    addLogsToFile(log, ERROR_LOGS);
-  } 
+  const log = `[${getFormattedDate()}] UNHANDLED REJECTION: ${error.stack || error.message}`;
+  addLogsToFile(log, ERROR_LOGS);
+}
+
+export const uncaughtException = (error: Error): void => {
+  const log = `[${getFormattedDate()}] UNCAUGHT EXCEPTION: ${error.stack || error.message}`;
+  addLogsToFile(log, ERROR_LOGS);
+}
