@@ -1,16 +1,18 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { UserModule } from './resources/users/user.module';
+import {BoardModule } from './resources/boards/board.module';
+import {TaskModule } from './resources/tasks/task.module';
+import {LoginModule } from './resources/login/login.module';
+import { AuthModule } from './auth/auth.module';
+
 import { LoginsController } from "./resources/login/login.controller"; 
 import { UsersController } from './resources/users/user.controller';
 import { BoardsController } from "./resources/boards/board.controller";
 import { TasksController } from "./resources/tasks/task.controller";
-import { UsersService } from "./resources/users/user.service";
-import { BoardService } from "./resources/boards/board.service";
-import { TaskService } from "./resources/tasks/task.service";
 
 import { LoggerReqMiddleware } from './middleware/logRequest'
-import { VerifySession } from './middleware/verify-session';
 import { POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER, POSTGRES_PORT, POSTGRES_HOST } from './common/config'
 
 const typeOrmModule = TypeOrmModule.forRoot({
@@ -34,17 +36,19 @@ const typeOrmModule = TypeOrmModule.forRoot({
 })
 
 @Module({
-    imports: [typeOrmModule],
-    controllers: [LoginsController, UsersController, BoardsController, TasksController],
-    providers: [UsersService, BoardService, TaskService]
+    imports: [
+        typeOrmModule,
+        UserModule,
+        BoardModule,
+        TaskModule,
+        LoginModule,
+        AuthModule
+    ],
 })
 export class AppModule implements NestModule{
     configure(consumer: MiddlewareConsumer):void {
         consumer
             .apply(LoggerReqMiddleware)
             .forRoutes(LoginsController, UsersController, BoardsController, TasksController);
-        consumer
-            .apply(VerifySession)
-            .exclude('login', 'doc')
     }
 };

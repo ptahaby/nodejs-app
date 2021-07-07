@@ -19,7 +19,7 @@ export type UserResponse = {
  * Class representing a User
  */
 @Entity()
-class User {
+export class User {
 
   @PrimaryGeneratedColumn('uuid')
   id!: string;
