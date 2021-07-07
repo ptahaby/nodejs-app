@@ -1,8 +1,9 @@
 import { Response, Request } from 'express';
-import { Controller, Get, Post, Body, Param, Delete, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, Request as RequestNest, UseGuards } from '@nestjs/common';
 import User, { UserData } from './user.model';
 import { UsersService } from './user.service';
-
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   private usersService: UsersService;
@@ -12,7 +13,7 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(_: Request, @Res() res: Response): Promise<void> {
+  async findAll(@RequestNest()_ : Request, @Res() res: Response): Promise<void> {
     const users = await this.usersService.getAll();
     res.json(users.map(User.toResponse));
   }

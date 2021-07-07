@@ -1,8 +1,10 @@
 import { Response } from 'express';
-import { Controller, Get, Post, Body, Param, Delete, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { TaskRequestBody } from './task.model';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('boards')
 export class TasksController {
   private taskService: TaskService;
