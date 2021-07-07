@@ -4,7 +4,7 @@ services:
         build:
             context: ./
             dockerfile: ./dockerfile_app/Dockerfile
-        command: npm start
+        command: bash -c "npm run migration:run && npm start"
         restart: always
         volumes: 
             - ./src:/usr/app/src
@@ -12,6 +12,8 @@ services:
             - ${PORT}:${PORT}
         networks:
             - my_net_app
+        environment: 
+            - POSTGRES_HOST=db    
         depends_on: 
             - db
     db:
@@ -29,10 +31,6 @@ services:
             - ${POSTGRES_PORT}:${POSTGRES_PORT}
         volumes:
             - ./postgres-data:${PG_DATA}
-                # copy the sql script to create tables
-            - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-               # copy the sql script to fill tables
-            - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
         networks:
             - my_net_app
 networks: 

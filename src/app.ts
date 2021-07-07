@@ -5,8 +5,10 @@ import YAML from 'yamljs';
 import userRouter from './resources/users/user.router';
 import boardRouter from './resources/boards/board.router';
 import taskRouter from './resources/tasks/task.router';
-import { logRequest, logErrorHandler, getFormattedDate } from './middleware/logger';
+import loginRouter from './resources/login/login.router';
+import { verifyToken } from  './middleware/verify-session';
 import 'reflect-metadata';
+import { logRequest, logErrorHandler, uncaughtException, unhandledRejection } from './middleware/logger';
 
 process.on('uncaughtException', uncaughtException)
 process.on('unhandledRejection',unhandledRejection)
@@ -27,6 +29,8 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use('/login', loginRouter);
+app.use(verifyToken);
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 app.use('/boards', taskRouter);

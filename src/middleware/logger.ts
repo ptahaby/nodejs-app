@@ -4,16 +4,23 @@ import fs from 'fs';
 const ERROR_LOGS = '/../../error-logs.txt';
 const REQUEST_LOGS = '/../../request-logs.txt';
 
-const getFormattedDate = (): string => {
+export const getFormattedDate = (): string => {
     const currentDateTime = new Date();
     const formattedDate = `${currentDateTime.getFullYear()}-${currentDateTime.getMonth() + 1}-${currentDateTime.getDate()} ${currentDateTime.getHours()}:${currentDateTime.getMinutes()}:${currentDateTime.getSeconds()}`
     return formattedDate;
 }
+
 const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LOGS) => {
   fs.appendFile(`${__dirname}${file}`, `${logs  }\n`, (err) => {
     if(err) throw err;
   });
 }
+
+const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LOGS) => {
+    fs.appendFile(`${__dirname}${file}`, `${logs  }\n`, (err) => {
+      if(err) throw err;
+    });
+  }
 
 export const logRequest = (req: Request, res: Response, next: NextFunction): void => {
     const { url, method, body, query } = req
@@ -22,9 +29,7 @@ export const logRequest = (req: Request, res: Response, next: NextFunction): voi
     res.on('finish', () => {
         const { statusCode } = res;
         const log = `[${getFormattedDate()}] ${method}:${url} ${statusCode}; Query params: ${formattedParams}; Body: ${formattedBody}`;
-        fs.appendFile(`${__dirname  }/../../logs.txt`, `${log  }\n`, (err) => {
-            if(err) throw err;
-        })
+        addLogsToFile(log, REQUEST_LOGS);
     })
     next();
 }
