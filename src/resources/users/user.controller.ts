@@ -3,7 +3,11 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Res, Request as Reques
 import User, { UserData } from './user.model';
 import { UsersService } from './user.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-@UseGuards(JwtAuthGuard)
+import { RolesGuard } from '../../roles/role.guard';
+import { Roles } from '../../roles/roles.decorator';
+import { Role } from '../../roles/role.enum';
+
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   private usersService: UsersService;
@@ -29,6 +33,7 @@ export class UsersController {
     }
   }
 
+  @Roles(Role.Admin)
   @Post()
   async create(@Body() createUser: UserData, @Res() res: Response): Promise<void> {
     try{
