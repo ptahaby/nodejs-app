@@ -1,6 +1,5 @@
-import { Response, Request } from 'express';
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, Request as RequestNest, UseGuards } from '@nestjs/common';
-import User, { UserData } from './user.model';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import User, { UserData, UserResponse } from './user.model';
 import { UsersService } from './user.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { RolesGuard } from '../../roles/role.guard';
@@ -17,51 +16,49 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(@RequestNest()_ : Request, @Res() res: Response): Promise<void> {
+  async findAll(): Promise<Array<UserResponse>> {
     const users = await this.usersService.getAll();
-    res.json(users.map(User.toResponse));
+    return users.map(User.toResponse);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response): Promise<void> {
+  async findOne(@Param('id') id: string,): Promise<UserResponse| null> {
     
     const user = await this.usersService.getById(id);
     if(user) {
-      res.json(User.toResponse(user));
-    } else {
-      res.send(404).send();
-    }
+      return User.toResponse(user);
+    } 
+      return null;
   }
 
   @Roles(Role.Admin)
   @Post()
-  async create(@Body() createUser: UserData, @Res() res: Response): Promise<void> {
+  async create(@Body() createUser: UserData): Promise<UserResponse|null> {
     try{
       const { name, login, password } = createUser;
         const user = await this.usersService.create(new User({name, login, password}));
-      res.status(201).json(User.toResponse(user));
+      return User.toResponse(user);
     } catch(e) {
-      console.log(e)
+      console.log(e);
+      return null
     }
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateUser: UserData, @Res() res: Response): Promise<void> {
+  async update(@Param('id') id: string, @Body() updateUser: UserData): Promise<UserResponse|null> {
     const user = await this.usersService.update(id, updateUser);
     if(user) {
-      res.json(User.toResponse(user));
-    } else {
-      res.send(404).send();
-    }
+      return User.toResponse(user);
+    } 
+      return null;
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string, @Res() res: Response): Promise<void> {
+  async delete(@Param('id') id: string): Promise<string> {
     const isDeleted = await this.usersService.deleteUser(id);
     if(isDeleted) {
-      res.status(204).send('The user has been deleted');
-    } else {
-      res.status(404).send('User not found');
+      return 'The user has been deleted';
     } 
+    return 'User not found'; 
   }
 }

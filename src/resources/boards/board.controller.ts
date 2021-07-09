@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, UseGuards } from '@nestjs/common';
-import Board, { BoardType } from './board.model';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import Board, { BoardType, BoardResponse } from './board.model';
 import { BoardService }  from './board.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
@@ -14,47 +13,44 @@ export class BoardsController {
   }
 
   @Get()
-  async findAll(_: Request, @Res() res: Response): Promise<void> {
+  async findAll(): Promise<Array<BoardResponse>> {
     const boards = await this.boardService.getAll();
-    res.json(boards.map(Board.toResponse));
+    return boards.map(Board.toResponse);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response): Promise<void> {
+  async findOne(@Param('id') id: string): Promise<BoardResponse|null> {
     const board = await this.boardService.getById(id);
     if(board){
-      res.json(Board.toResponse(board));
-    } else{
-      res.status(404).send();
-    }
+      return Board.toResponse(board);
+    } 
+    return null;
   }
 
   @Post()
-  async create(@Body() createBoard: BoardType, @Res() res: Response): Promise<void> {
+  async create(@Body() createBoard: BoardType): Promise<BoardResponse|null> {
     const board = await this.boardService.create(createBoard);
     if(board) {
-      res.status(201).json(Board.toResponse(board));
+      return Board.toResponse(board);
     }
-    res.status(400)
+    return null;
   }
 
   @Put(':id')
-  async update(@Param('id') id: string, @Body() updateBoard: BoardType, @Res() res: Response): Promise<void> {
+  async update(@Param('id') id: string, @Body() updateBoard: BoardType): Promise<BoardResponse|null> {
     const board = await this.boardService.update(id, updateBoard);
     if(board){
-      res.json(Board.toResponse(board));
-    } else {
-      res.status(404).send();
-    }
+      return Board.toResponse(board);
+    } 
+    return null;
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string, @Res() res: Response): Promise<void> {
+  async delete(@Param('id') id: string): Promise<string> {
     const isDeleted = await this.boardService.deleteBoard(id);
     if(isDeleted) {
-      res.status(204).send();
-    } else {
-      res.status(404).send();
-    }
+      return 'The board has been deleted';
+    } 
+    return 'Board not found'; 
   }
 }

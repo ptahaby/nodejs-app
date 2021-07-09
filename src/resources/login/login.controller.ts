@@ -1,4 +1,3 @@
-import {  Request as RequestEx } from 'express';
 import { Controller, Post, Request, UseGuards} from '@nestjs/common';
 import { LocalAuthGuard } from '../../auth/local-auth.guard';
 import { User } from '../users/user.model';
@@ -15,7 +14,7 @@ export class LoginsController {
 
   @UseGuards(LocalAuthGuard)
   @Post()
-  async login(@Request() req: RequestEx): Promise<AccessToken|undefined> {
+  async login(@Request() req: {user: User}): Promise<AccessToken|undefined> {
     return this.authService.login(req.user as User)
   }
 }

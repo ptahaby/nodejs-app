@@ -9,6 +9,7 @@
   "main": "src/server.ts",
   "scripts": {
     "start": "nodemon src/server.ts",
+    "start:fastify": "USE_FASTIFY=true nodemon src/server.ts",
     "migration:run": "./node_modules/.bin/ts-node ./node_modules/.bin/typeorm migration:run",
     "lint": "eslint --ext .js,.ts --fix src/",
     "test": "cross-env DEBUG=rs:* jest --testMatch \"<rootDir>/test/e2e/test/*.test.js\" --noStackTrace --runInBand",
@@ -45,11 +46,12 @@
     ]
   },
   "dependencies": {
-    "@nestjs/common": "^7.6.18",
-    "@nestjs/core": "^7.6.18",
+    "@nestjs/common": "^8.0.0",
+    "@nestjs/core": "^8.0.0",
     "@nestjs/jwt": "^7.2.0",
     "@nestjs/passport": "^7.1.6",
     "@nestjs/platform-express": "^7.6.18",
+    "@nestjs/platform-fastify": "^8.0.0",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/typeorm": "^7.1.5",
     "@types/bcrypt": "^5.0.0",
