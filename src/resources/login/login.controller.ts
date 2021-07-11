@@ -1,20 +1,6 @@
-import { Controller, Post, Request, UseGuards} from '@nestjs/common';
-import { LocalAuthGuard } from '../../auth/local-auth.guard';
-import { User } from '../users/user.model';
-import { AuthService, AccessToken } from '../../auth/auth.service';
+import { LoginsExpressController } from './express.controller';
+import { LoginsFastifyController } from './fastify.controller';
+import {USE_FASTIFY} from '../../common/config';
 
-@Controller('login')
-export class LoginsController {
-
-  private authService: AuthService;
-
-  constructor(authService: AuthService) {
-    this.authService = authService;
-  }
-
-  @UseGuards(LocalAuthGuard)
-  @Post()
-  async login(@Request() req: {user: User}): Promise<AccessToken|undefined> {
-    return this.authService.login(req.user as User)
-  }
-}
+const LoginsController = USE_FASTIFY ? LoginsFastifyController: LoginsExpressController
+export { LoginsController };
