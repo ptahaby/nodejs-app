@@ -1,42 +1,63 @@
+import { Injectable } from '@nestjs/common';
 import * as usersRepo from './user.memory.repository';
-import * as taskService from '../tasks/task.service';
+import { TaskService } from '../tasks/task.service';
 import User, { UserData } from './user.model'
 
-/**
- * Get all users
- * @returns {Promise<Array<User>>} users
- */
-const getAll = (): Promise<Array<User>> => usersRepo.getAll();
+@Injectable()
+export class UsersService {
+    private taskService: TaskService
 
-const getByLogin = (login:string): Promise<User|undefined> => usersRepo.getByLogin(login);
+    constructor(taskService: TaskService) {
+        this.taskService = taskService;
+    }
 
-/**
- * Get user by id
- * @param {string} userId first term
- * @returns {Promise<User>}  user
- */
-const getById = (userId: string): Promise<User|undefined> => usersRepo.getById(userId);
+    /**
+     * Get all users
+     * @returns {Promise<Array<User>>} users
+    */
+    getAll(): Promise<Array<User>> {
+        return usersRepo.getAll();
+    }
+ 
+    getByLogin(login:string): Promise<User|undefined> {
+        return usersRepo.getByLogin(login)
+    };
 
-/**
- * Create user
- * @param {{name: string, login: string, password: string}} user first term
- * @returns {Promise<User>} user
- */
-const create = (user: UserData): Promise<User> => usersRepo.create(user);
+    /**
+     * Get user by id
+     * @param {string} userId first term
+     * @returns {Promise<User>}  user
+     */
+    getById(userId: string): Promise<User|undefined> {
+        return usersRepo.getById(userId);
+    }
 
-/**
- * Update user
- * @param {string} userId first term
- * @param {{name: string, login: string, password: string}} user second term
- * @returns {Promise<User>} user
- */
-const update = (userId: string, user: UserData): Promise<User|undefined> => usersRepo.update(userId, user);
+    /**
+     * Create user
+     * @param {{name: string, login: string, password: string}}
+     * @returns {Promise<User>} user
+     */
+    create(user: UserData): Promise<User> {
+        return usersRepo.create(user);
+    } 
 
-/**
- * Delete user
- * @param {string} userId first term
- * @returns {Promise<boolean>} boolean
- */
-const deleteUser = (userId: string): Promise<boolean> => taskService.clearUserIdTasks(userId).then(() => usersRepo.deleteUser(userId))
+    /**
+     * Update user
+     * @param {string} userId first term
+     * @param {{name: string, login: string, password: string}} user second term
+     * @returns {Promise<User>} user
+     */
+    update(userId: string, user: UserData): Promise<User|undefined> {
+        return usersRepo.update(userId, user); 
+    }
 
-export {  deleteUser, update, create, getById, getAll, getByLogin };
+    /**
+     * Delete user
+     * @param {string} userId first term
+     * @returns {Promise<boolean>} boolean
+     */
+    deleteUser(userId: string): Promise<boolean>{
+        return this.taskService.clearUserIdTasks(userId).then(() => usersRepo.deleteUser(userId));
+    }
+}
+

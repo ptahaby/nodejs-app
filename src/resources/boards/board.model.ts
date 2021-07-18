@@ -10,7 +10,7 @@ export type BoardType = {
   columns: Array<ColumnEntity>
 }
 
-type BoardResponse = {
+export type BoardResponse = {
   id: string;
   title: string;
   task: Array<Task>

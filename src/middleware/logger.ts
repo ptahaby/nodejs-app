@@ -16,11 +16,6 @@ const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LO
   });
 }
 
-const addLogsToFile = (logs: string, file: typeof ERROR_LOGS | typeof REQUEST_LOGS) => {
-    fs.appendFile(`${__dirname}${file}`, `${logs  }\n`, (err) => {
-      if(err) throw err;
-    });
-  }
 
 export const logRequest = (req: Request, res: Response, next: NextFunction): void => {
     const { url, method, body, query } = req

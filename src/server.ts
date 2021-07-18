@@ -1,11 +1,13 @@
-import { createConnection } from 'typeorm';
 import { PORT } from './common/config';
-import app from './app';
+import bootstrap from './app';
 
-createConnection().then(() => {
-  app.listen(PORT, () =>
-    console.log(`App is running on http://localhost:${PORT}`)
-  );
-}).catch(error => console.error(error));
+
+async function server() {
+  const app = await bootstrap();
+  await app.listen(PORT || '4000');
+  console.log(`Application is running on: ${await app.getUrl()}`);
+}
+
+server();
 
 

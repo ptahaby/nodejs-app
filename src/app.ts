@@ -1,39 +1,42 @@
-import express, { Request, Response, NextFunction } from 'express';
-import swaggerUI from 'swagger-ui-express';
+import { NestFactory } from '@nestjs/core';
+import { SwaggerModule } from '@nestjs/swagger';
 import path from 'path';
 import YAML from 'yamljs';
-import userRouter from './resources/users/user.router';
-import boardRouter from './resources/boards/board.router';
-import taskRouter from './resources/tasks/task.router';
-import loginRouter from './resources/login/login.router';
-import { verifyToken } from  './middleware/verify-session';
+import { INestApplication } from '@nestjs/common';
 import 'reflect-metadata';
-import { logRequest, logErrorHandler, uncaughtException, unhandledRejection } from './middleware/logger';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import { uncaughtException, unhandledRejection } from './common/logger';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './exceptions/http-exception.filter';
+import { USE_FASTIFY } from './common/config';
 
 process.on('uncaughtException', uncaughtException)
 process.on('unhandledRejection',unhandledRejection)
 
-const app = express();
-const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+async function bootstrap(): Promise<INestApplication> {
+  let app;
+  if(USE_FASTIFY) {
+    app = await NestFactory.create<NestFastifyApplication>(
+      AppModule,
+      new FastifyAdapter()
+    );
+    app.useGlobalFilters(new HttpExceptionFilter());
 
-app.use(express.json());
+    const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+    SwaggerModule.setup('api', app, swaggerDocument);
 
-app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
-
-app.use(logRequest);
-app.use('/', (req: Request, res: Response, next: NextFunction) => {
-  if (req.originalUrl === '/') {
-    res.send('Service is running!');
-    return;
+  } else {
+    app = await NestFactory.create(AppModule);
+    app.useGlobalFilters(new HttpExceptionFilter());
+    const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
+      
+    SwaggerModule.setup('doc', app, swaggerDocument) 
   }
-  next();
-});
 
-app.use('/login', loginRouter);
-app.use(verifyToken);
-app.use('/users', userRouter);
-app.use('/boards', boardRouter);
-app.use('/boards', taskRouter);
-app.use(logErrorHandler);
+  return app
+}
 
-export default  app;
+export default  bootstrap;
